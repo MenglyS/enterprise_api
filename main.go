@@ -5,6 +5,7 @@ import (
 	"log"
 	"midterm/db"
 	"midterm/routers"
+	"midterm/utils"
 
 	"github.com/gin-gonic/gin"
 )
@@ -15,6 +16,13 @@ func init() {
 		log.Fatalf("Failed to connect to database: %v", err)
 	} else {
 		fmt.Printf("Connected to database\n")
+	}
+
+	err = utils.ConnectToSpaces()
+	if err != nil {
+		log.Fatalf("Failed to connect to space: %v", err)
+	} else {
+		fmt.Printf("Connected to space\n")
 	}
 }
 
