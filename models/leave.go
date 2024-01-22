@@ -5,10 +5,10 @@ import "time"
 type Leave struct {
 	LeaveId       uint `gorm:"primary_key"`
 	Title         string
-	LeaveFile     string
+	LeaveFile     *string
 	Description   string
-	LeaveDateFrom time.Time
-	LeaveDateTo   time.Time
+	LeaveDateFrom string
+	LeaveDateTo   string
 	CreatedBy     int
 	ApprovedBy    int
 	CreatedAt     time.Time

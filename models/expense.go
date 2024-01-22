@@ -6,9 +6,9 @@ type Expense struct {
 	ExpenseId   uint ` gorm:"primary_key"`
 	Title       string
 	Amount      float64
-	ExpenseFile string
+	ExpenseFile *string
 	Description string
-	CreateBy    int
+	CreatedBy   int
 	ApprovedBy  int
 	CreatedAt   time.Time
 	UpdatedAt   time.Time

@@ -53,5 +53,17 @@ func InitRoute(route *gin.Engine) {
 		apiV1.GET("applicant/getAll", controllers.GetApplicants)
 		apiV1.DELETE("applicant/delete/:id", controllers.DeleteApplicant)
 		apiV1.PUT("applicant/edit/:id", controllers.EditApplicant)
+
+		//expense routes
+		apiV1.POST("expense/create", controllers.CreateExpense)
+		apiV1.GET("expense/getAll", controllers.GetExpenses)
+		apiV1.PUT("expense/edit/:id", controllers.EditExpense)
+		apiV1.DELETE("expense/delete/:id", controllers.DeleteExpense)
+
+		//leave routes
+		apiV1.POST("leave/create", controllers.CreateLeave)
+		apiV1.GET("leave/getAll", controllers.GetLeaves)
+		apiV1.PUT("leave/edit/:id", controllers.EditLeave)
+		apiV1.DELETE("leave/delete/:id", controllers.DeleteLeave)
 	}
 }
