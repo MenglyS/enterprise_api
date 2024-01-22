@@ -8,6 +8,7 @@ type Job struct {
 	CategoryIds       string
 	Description       string
 	Contact           string
+	ExpiryDate        string
 	AnnouncementImage *string
 	CreatedBy         int
 	CreatedAt         time.Time

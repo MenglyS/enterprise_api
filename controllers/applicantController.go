@@ -177,3 +177,19 @@ func EditApplicant(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"data": applicant})
 }
+
+func CountApplicants(c *gin.Context) {
+	applicants := []models.Applicant{}
+
+	result := db.DbConnect.Find(&applicants)
+	if result.Error != nil {
+		// handle error, e.g. log it or return it in the HTTP response
+		fmt.Println(result.Error)
+		c.JSON(http.StatusBadRequest, gin.H{"error": result.Error})
+		return
+	}
+
+	count := len(applicants)
+
+	c.JSON(http.StatusOK, gin.H{"total": count})
+}

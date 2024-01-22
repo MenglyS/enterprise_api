@@ -48,11 +48,12 @@ func InitRoute(route *gin.Engine) {
 		apiV1.DELETE("job/delete/:id", controllers.DeleteJob)
 		apiV1.PUT("job/edit/:id", controllers.EditJob)
 
-		//job routes
+		//applicants routes
 		apiV1.POST("applicant/create/:id", controllers.CreateApplicant)
 		apiV1.GET("applicant/getAll", controllers.GetApplicants)
 		apiV1.DELETE("applicant/delete/:id", controllers.DeleteApplicant)
 		apiV1.PUT("applicant/edit/:id", controllers.EditApplicant)
+		apiV1.GET("applicant/count", controllers.CountApplicants)
 
 		//expense routes
 		apiV1.POST("expense/create", controllers.CreateExpense)
