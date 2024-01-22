@@ -7,12 +7,14 @@ type Applicant struct {
 	Name        string
 	Email       string
 	Phone       string
-	LanguageIds string
-	SkillIds    string
-	Address     string
-	Experience  string
-	Education   string
-	Summary     string
+	LanguageIds *string
+	SkillIds    *string
+	Address     *string
+	Experience  *string
+	Education   *string
+	Summary     *string
+	JobId       int
+	CvFile      *string
 	ApprovedBy  int
 	CreatedAt   time.Time
 	UpdatedAt   time.Time

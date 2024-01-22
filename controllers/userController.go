@@ -139,11 +139,13 @@ func EditUser(c *gin.Context) {
 	file, err := c.FormFile("profile") // replace "file" with the name of your form field
 	if err == nil {
 
-		err = utils.DeleteFileFromSpaces(fileName)
-		if err != nil {
-			fmt.Printf("Can not delete profile\n")
-			c.JSON(http.StatusBadRequest, gin.H{"error": "error deleting profile"})
-			return
+		if fileName != "" {
+			err = utils.DeleteFileFromSpaces(fileName)
+			if err != nil {
+				fmt.Printf("Can not delete image\n")
+				c.JSON(http.StatusBadRequest, gin.H{"error": "error deleting image"})
+				return
+			}
 		}
 
 		fileName, err = utils.GenerateFileName(profileFolder, file.Filename)
