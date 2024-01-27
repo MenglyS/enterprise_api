@@ -15,6 +15,14 @@ import (
 func CreateLanguage(c *gin.Context) {
 	name := c.PostForm("name")
 
+	user, err := GetAuthUser(c)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Can not get auth user"})
+		return
+	}
+
+	fmt.Printf("User: %v\n", user)
+
 	language := models.Language{
 		Name: name,
 	}

@@ -4,9 +4,9 @@ import (
 	"bytes"
 	"fmt"
 	"io"
+	"midterm/env"
 	"mime/multipart"
 	"net/http"
-	"os"
 	"path/filepath"
 	"regexp"
 	"strconv"
@@ -17,28 +17,16 @@ import (
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
-	"github.com/joho/godotenv"
 )
 
 var s3Con *s3.S3
-var bucketName string
 
 func ConnectToSpaces() error {
-	err := godotenv.Load()
-	if err != nil {
-		panic("Failed to load environment variables")
-	}
-
-	key := os.Getenv("CLOUD_ACCESS")
-	secret := os.Getenv("CLOUD_SECRET")
-	url := os.Getenv("CLOUD_END_POINT")
-	region := os.Getenv("CLOUD_REGION")
-	bucketName = os.Getenv("CLOUD_BUCKET")
 
 	sess, err := session.NewSession(&aws.Config{
-		Region:      aws.String(region),
-		Credentials: credentials.NewStaticCredentials(key, secret, ""),
-		Endpoint:    aws.String(url),
+		Region:      aws.String(env.CloudRegion),
+		Credentials: credentials.NewStaticCredentials(env.CloudAccess, env.CloudSecret, ""),
+		Endpoint:    aws.String(env.CloudEndPoint),
 	})
 	if err != nil {
 		return err
@@ -67,7 +55,7 @@ func UploadFileToSpaces(fileName string, fileHeader *multipart.FileHeader) error
 
 	// Config settings: this is where the upload magic happens
 	_, err = s3Con.PutObject(&s3.PutObjectInput{
-		Bucket:               aws.String(bucketName),
+		Bucket:               aws.String(env.CloudBucket),
 		Key:                  aws.String(fileName),
 		ACL:                  aws.String("public-read"),
 		Body:                 bytes.NewReader(buffer),
@@ -82,7 +70,7 @@ func UploadFileToSpaces(fileName string, fileHeader *multipart.FileHeader) error
 
 func DeleteFileFromSpaces(keyName string) error {
 	_, err := s3Con.DeleteObject(&s3.DeleteObjectInput{
-		Bucket: aws.String(bucketName),
+		Bucket: aws.String(env.CloudBucket),
 		Key:    aws.String(keyName),
 	})
 

@@ -2,6 +2,7 @@ package routers
 
 import (
 	"midterm/controllers"
+	"midterm/middleware"
 
 	"github.com/gin-gonic/gin"
 )
@@ -10,61 +11,75 @@ func InitRoute(route *gin.Engine) {
 
 	apiV1 := route.Group("/api/v1")
 	{
-		apiV1.POST("role/create", controllers.CreateRole)
+		apiV1.POST("role/create", middleware.AuthMiddleware(), controllers.CreateRole)
+
+		//admin routes
+		admin := apiV1.Group("/admin")
+		admin.POST("login", controllers.AdminLogin)
 
 		//language routes
-		apiV1.POST("language/create", controllers.CreateLanguage)
-		apiV1.GET("language/getAll", controllers.GetLanguages)
-		apiV1.PUT("language/edit/:id", controllers.EditLanguage)
-		apiV1.DELETE("language/delete/:id", controllers.DeleteLanguage)
+		language := apiV1.Group("/language")
+		language.Use(middleware.AuthMiddleware())
+		language.POST("/create", controllers.CreateLanguage)
+		language.GET("/getAll", controllers.GetLanguages)
+		language.PUT("/edit/:id", controllers.EditLanguage)
+		language.DELETE("/delete/:id", controllers.DeleteLanguage)
 
 		//position routes
-		apiV1.POST("position/create", controllers.CreatePosition)
-		apiV1.GET("position/getAll", controllers.GetPositions)
-		apiV1.PUT("position/edit/:id", controllers.EditPosition)
-		apiV1.DELETE("position/delete/:id", controllers.DeletePosition)
+		position := apiV1.Group("/position")
+		position.POST("/create", controllers.CreatePosition)
+		position.GET("/getAll", controllers.GetPositions)
+		position.PUT("/edit/:id", controllers.EditPosition)
+		position.DELETE("/delete/:id", controllers.DeletePosition)
 
 		//skill routes
-		apiV1.POST("skill/create", controllers.CreateSkill)
-		apiV1.GET("skill/getAll", controllers.GetSkills)
-		apiV1.PUT("skill/edit/:id", controllers.EditSkill)
-		apiV1.DELETE("skill/delete/:id", controllers.DeleteSkill)
+		skill := apiV1.Group("/skill")
+		skill.POST("/create", controllers.CreateSkill)
+		skill.GET("/getAll", controllers.GetSkills)
+		skill.PUT("/edit/:id", controllers.EditSkill)
+		skill.DELETE("/delete/:id", controllers.DeleteSkill)
 
 		//category routes
-		apiV1.POST("category/create", controllers.CreateCategory)
-		apiV1.GET("category/getAll", controllers.GetCategorys)
-		apiV1.PUT("category/edit/:id", controllers.EditCategory)
-		apiV1.DELETE("category/delete/:id", controllers.DeleteCategory)
+		category := apiV1.Group("/category")
+		category.POST("/create", controllers.CreateCategory)
+		category.GET("/getAll", controllers.GetCategorys)
+		category.PUT("/edit/:id", controllers.EditCategory)
+		category.DELETE("/delete/:id", controllers.DeleteCategory)
 
 		//user routes
-		apiV1.POST("user/create", controllers.CreateUser)
-		apiV1.GET("user/getAll", controllers.GetUsers)
-		apiV1.PUT("user/edit/:id", controllers.EditUser)
-		apiV1.DELETE("user/delete/:id", controllers.DeleteUser)
+		user := apiV1.Group("/user")
+		user.POST("/create", controllers.CreateUser)
+		user.GET("/getAll", controllers.GetUsers)
+		user.PUT("/edit/:id", controllers.EditUser)
+		user.DELETE("/delete/:id", controllers.DeleteUser)
 
 		//job routes
-		apiV1.POST("job/create", controllers.CreateJob)
-		apiV1.GET("job/getAll", controllers.GetJobs)
-		apiV1.DELETE("job/delete/:id", controllers.DeleteJob)
-		apiV1.PUT("job/edit/:id", controllers.EditJob)
+		job := apiV1.Group("/job")
+		job.POST("/create", controllers.CreateJob)
+		job.GET("/getAll", controllers.GetJobs)
+		job.DELETE("/delete/:id", controllers.DeleteJob)
+		job.PUT("/edit/:id", controllers.EditJob)
 
 		//applicants routes
-		apiV1.POST("applicant/create/:id", controllers.CreateApplicant)
-		apiV1.GET("applicant/getAll", controllers.GetApplicants)
-		apiV1.DELETE("applicant/delete/:id", controllers.DeleteApplicant)
-		apiV1.PUT("applicant/edit/:id", controllers.EditApplicant)
-		apiV1.GET("applicant/count", controllers.CountApplicants)
+		applicant := apiV1.Group("/applicant")
+		applicant.POST("/create/:id", controllers.CreateApplicant)
+		applicant.GET("/getAll", controllers.GetApplicants)
+		applicant.DELETE("/delete/:id", controllers.DeleteApplicant)
+		applicant.PUT("/edit/:id", controllers.EditApplicant)
+		applicant.GET("/count", controllers.CountApplicants)
 
 		//expense routes
-		apiV1.POST("expense/create", controllers.CreateExpense)
-		apiV1.GET("expense/getAll", controllers.GetExpenses)
-		apiV1.PUT("expense/edit/:id", controllers.EditExpense)
-		apiV1.DELETE("expense/delete/:id", controllers.DeleteExpense)
+		expense := apiV1.Group("/expense")
+		expense.POST("/create", controllers.CreateExpense)
+		expense.GET("/getAll", controllers.GetExpenses)
+		expense.PUT("/edit/:id", controllers.EditExpense)
+		expense.DELETE("/delete/:id", controllers.DeleteExpense)
 
 		//leave routes
-		apiV1.POST("leave/create", controllers.CreateLeave)
-		apiV1.GET("leave/getAll", controllers.GetLeaves)
-		apiV1.PUT("leave/edit/:id", controllers.EditLeave)
-		apiV1.DELETE("leave/delete/:id", controllers.DeleteLeave)
+		leave := apiV1.Group("/leave")
+		leave.POST("/create", controllers.CreateLeave)
+		leave.GET("/getAll", controllers.GetLeaves)
+		leave.PUT("/edit/:id", controllers.EditLeave)
+		leave.DELETE("/delete/:id", controllers.DeleteLeave)
 	}
 }
