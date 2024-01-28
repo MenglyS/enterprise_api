@@ -1,11 +1,15 @@
 package models
 
-import "time"
+import (
+	"time"
+
+	"github.com/go-playground/validator/v10"
+)
 
 type Expense struct {
-	ExpenseId   uint ` gorm:"primary_key"`
-	Title       string
-	Amount      float64
+	ExpenseId   uint    ` gorm:"primary_key"`
+	Title       string  `validate:"required"`
+	Amount      float64 `validate:"required"`
 	ExpenseFile *string
 	Description string
 	CreatedBy   int
@@ -17,4 +21,9 @@ type Expense struct {
 
 func (Expense) TableName() string {
 	return "expense_requests"
+}
+
+func (u *Expense) Validate() error {
+	validate := validator.New()
+	return validate.Struct(u)
 }

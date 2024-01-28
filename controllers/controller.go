@@ -17,7 +17,7 @@ func CreateRole(c *gin.Context) {
 	role := models.Category{
 		Name: name,
 	}
-
+	
 	result := db.DbConnect.Create(&role)
 	if result.Error != nil {
 		// handle error, e.g. log it or return it in the HTTP response

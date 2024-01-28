@@ -13,13 +13,13 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-func AdminLogin(c *gin.Context) {
+func Login(c *gin.Context, role int) {
 
 	email := c.PostForm("email")
 	password := c.PostForm("password")
 
 	// Authenticate the user. Replace this with your actual authentication logic.
-	user, err := authenticateAdmin(email, password)
+	user, err := authenticate(email, password, role)
 	if err != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
 		return
@@ -33,6 +33,7 @@ func AdminLogin(c *gin.Context) {
 
 	// Set token claims
 	claims["user_id"] = user.UserId
+	claims["role_id"] = user.RoleId
 	claims["exp"] = time.Now().Add(time.Hour * 24).Unix()
 
 	// Sign the token with our secret
@@ -41,7 +42,7 @@ func AdminLogin(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"token": tokenString})
 }
 
-func authenticateAdmin(email, password string) (models.User, error) {
+func authenticate(email, password string, role int) (models.User, error) {
 	user := models.User{}
 
 	result := db.DbConnect.Where("email = ?", email).First(&user)
@@ -50,7 +51,7 @@ func authenticateAdmin(email, password string) (models.User, error) {
 		return user, result.Error
 	}
 
-	if user.RoleId != 1 {
+	if user.RoleId > role {
 		return user, errors.New("unauthorized: user does not have the required role")
 	}
 

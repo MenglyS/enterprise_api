@@ -21,7 +21,19 @@ func CreateUser(c *gin.Context) {
 
 	user := models.User{}
 
-	if err := c.ShouldBind(&user); err != nil {
+	auth, err := GetAuthUser(c)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Can not get auth user"})
+		return
+	}
+
+	if err = c.ShouldBind(&user); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	err = user.Validate()
+	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
@@ -52,7 +64,7 @@ func CreateUser(c *gin.Context) {
 	}
 
 	user.Status = 1
-	user.CreatedBy = 1
+	user.CreatedBy = int(auth.UserId)
 	user.Profile = &fileName
 
 	result := db.DbConnect.Create(&user)
