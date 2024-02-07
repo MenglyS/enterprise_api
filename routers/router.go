@@ -58,6 +58,9 @@ func InitRoute(route *gin.Engine) {
 
 		//user routes
 		user := apiV1.Group("/user")
+		user.Use(middleware.AuthMiddleware(2))
+		user.GET("/getProfile", controllers.GetProfile)
+		user.PUT("/editProfile", controllers.EditProfile)
 		user.Use(middleware.AuthMiddleware(1))
 		user.POST("/create", controllers.CreateUser)
 		user.GET("/getAll", controllers.GetUsers)
@@ -84,6 +87,7 @@ func InitRoute(route *gin.Engine) {
 		//expense routes
 		expense := apiV1.Group("/expense")
 		expense.POST("/create", middleware.AuthMiddleware(2), controllers.CreateExpense)
+		expense.GET("/getByUser", controllers.GetExpenseEmployee)
 		expense.Use(middleware.AuthMiddleware(1))
 		expense.GET("/getAll", controllers.GetExpenses)
 		expense.PUT("/edit/:id", controllers.EditExpense)
@@ -92,6 +96,7 @@ func InitRoute(route *gin.Engine) {
 		//leave routes
 		leave := apiV1.Group("/leave")
 		leave.POST("/create", middleware.AuthMiddleware(2), controllers.CreateLeave)
+		leave.GET("/getByUser", controllers.GetLeaveEmployee)
 		leave.Use(middleware.AuthMiddleware(1))
 		leave.GET("/getAll", controllers.GetLeaves)
 		leave.PUT("/edit/:id", controllers.EditLeave)

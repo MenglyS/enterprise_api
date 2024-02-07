@@ -19,6 +19,12 @@ func CreateLanguage(c *gin.Context) {
 		Name: name,
 	}
 
+	err := language.Validate()
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
 	result := db.DbConnect.Create(&language)
 	if result.Error != nil {
 		// handle error, e.g. log it or return it in the HTTP response

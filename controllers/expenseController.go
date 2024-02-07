@@ -17,10 +17,23 @@ func CreateExpense(c *gin.Context) {
 
 	expense := models.Expense{}
 
+	auth, err := GetAuthUser(c)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Can not get auth user"})
+		return
+	}
+
 	if err := c.ShouldBind(&expense); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+
+	err = expense.Validate()
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
 	var fileName string
 	file, err := c.FormFile("image") // replace "file" with the name of your form field
 	if err == nil {
@@ -40,7 +53,7 @@ func CreateExpense(c *gin.Context) {
 
 	expense.Status = 1
 	expense.ExpenseFile = &fileName
-	expense.CreatedBy = 1
+	expense.CreatedBy = int(auth.UserId)
 	expense.ApprovedBy = 0
 
 	result := db.DbConnect.Create(&expense)
@@ -69,20 +82,26 @@ func GetExpenses(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"data": expenses})
 }
 
-// func GetExpense(c *gin.Context) {
+func GetExpenseEmployee(c *gin.Context) {
 
-// 	expenses := []models.Expense{}
+	expenses := []models.Expense{}
 
-// 	result := db.DbConnect.Find(&expenses)
-// 	if result.Error != nil {
-// 		// handle error, e.g. log it or return it in the HTTP response
-// 		fmt.Println(result.Error)
-// 		c.JSON(http.StatusBadRequest, gin.H{"error": result.Error})
-// 		return
-// 	}
+	auth, err := GetAuthUser(c)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Can not get auth user"})
+		return
+	}
 
-// 	c.JSON(http.StatusOK, gin.H{"data": expenses})
-// }
+	result := db.DbConnect.Where("created_by = ?", int(auth.UserId)).Find(&expenses)
+	if result.Error != nil {
+		// handle error, e.g. log it or return it in the HTTP response
+		fmt.Println(result.Error)
+		c.JSON(http.StatusBadRequest, gin.H{"error": result.Error})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"data": expenses})
+}
 
 func DeleteExpense(c *gin.Context) {
 	// Get the ID from the URL
@@ -126,6 +145,12 @@ func EditExpense(c *gin.Context) {
 
 	// Bind the request body to the expense
 	if err := c.ShouldBind(&expense); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	err := expense.Validate()
+	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}

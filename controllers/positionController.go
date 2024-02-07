@@ -21,6 +21,12 @@ func CreatePosition(c *gin.Context) {
 		return
 	}
 
+	err := position.Validate()
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
 	result := db.DbConnect.Create(&position)
 	if result.Error != nil {
 		// handle error, e.g. log it or return it in the HTTP response
@@ -74,6 +80,12 @@ func EditPosition(c *gin.Context) {
 
 	// Bind the request body to the Position
 	if err := c.ShouldBind(&position); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	err := position.Validate()
+	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}

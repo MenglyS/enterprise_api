@@ -17,7 +17,19 @@ func CreateLeave(c *gin.Context) {
 
 	leave := models.Leave{}
 
+	auth, err := GetAuthUser(c)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Can not get auth user"})
+		return
+	}
+
 	if err := c.ShouldBind(&leave); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	err = leave.Validate()
+	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
@@ -40,7 +52,7 @@ func CreateLeave(c *gin.Context) {
 
 	leave.Status = 1
 	leave.LeaveFile = &fileName
-	leave.CreatedBy = 1
+	leave.CreatedBy = int(auth.UserId)
 	leave.ApprovedBy = 0
 
 	result := db.DbConnect.Create(&leave)
@@ -84,6 +96,27 @@ func GetLeaves(c *gin.Context) {
 // 	c.JSON(http.StatusOK, gin.H{"data": leaves})
 // }
 
+func GetLeaveEmployee(c *gin.Context) {
+
+	leaves := []models.Leave{}
+
+	auth, err := GetAuthUser(c)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Can not get auth user"})
+		return
+	}
+
+	result := db.DbConnect.Where("created_by = ?", int(auth.UserId)).Find(&leaves)
+	if result.Error != nil {
+		// handle error, e.g. log it or return it in the HTTP response
+		fmt.Println(result.Error)
+		c.JSON(http.StatusBadRequest, gin.H{"error": result.Error})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"data": leaves})
+}
+
 func DeleteLeave(c *gin.Context) {
 	// Get the ID from the URL
 	id := c.Param("id")
@@ -126,6 +159,12 @@ func EditLeave(c *gin.Context) {
 
 	// Bind the request body to the leave
 	if err := c.ShouldBind(&leave); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	err := leave.Validate()
+	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}

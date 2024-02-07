@@ -23,6 +23,12 @@ func CreateApplicant(c *gin.Context) {
 		return
 	}
 
+	err := applicant.Validate()
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
 	jobIdStr := c.Param("id")
 
 	jobId, err := strconv.Atoi(jobIdStr)
@@ -136,6 +142,12 @@ func EditApplicant(c *gin.Context) {
 
 	// Bind the request body to the applicant
 	if err := c.ShouldBind(&applicant); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	err := applicant.Validate()
+	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}

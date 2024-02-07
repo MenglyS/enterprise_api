@@ -17,7 +17,19 @@ func CreateJob(c *gin.Context) {
 
 	job := models.Job{}
 
+	auth, err := GetAuthUser(c)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Can not get auth user"})
+		return
+	}
+
 	if err := c.ShouldBind(&job); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	err = job.Validate()
+	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
@@ -40,7 +52,7 @@ func CreateJob(c *gin.Context) {
 	}
 
 	job.Status = 1
-	job.CreatedBy = 1
+	job.CreatedBy = int(auth.UserId)
 	job.AnnouncementImage = &fileName
 
 	result := db.DbConnect.Create(&job)
@@ -126,6 +138,12 @@ func EditJob(c *gin.Context) {
 
 	// Bind the request body to the job
 	if err := c.ShouldBind(&job); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	err := job.Validate()
+	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}

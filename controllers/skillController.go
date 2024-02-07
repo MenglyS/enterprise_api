@@ -21,6 +21,12 @@ func CreateSkill(c *gin.Context) {
 		return
 	}
 
+	err := skill.Validate()
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
 	result := db.DbConnect.Create(&skill)
 	if result.Error != nil {
 		// handle error, e.g. log it or return it in the HTTP response
@@ -74,6 +80,12 @@ func EditSkill(c *gin.Context) {
 
 	// Bind the request body to the Skill
 	if err := c.ShouldBind(&skill); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	err := skill.Validate()
+	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}

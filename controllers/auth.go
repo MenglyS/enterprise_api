@@ -67,12 +67,10 @@ func GetAuthUser(c *gin.Context) (models.User, error) {
 	var user models.User
 	id, exists := c.Get("id")
 	if !exists {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "No user found"})
 		return user, errors.New("No user found")
 	}
 
 	if err := db.DbConnect.First(&user, int(id.(float64))).Error; err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "user not found"})
 		return user, err
 	}
 

@@ -21,6 +21,12 @@ func CreateCategory(c *gin.Context) {
 		return
 	}
 
+	err := category.Validate()
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
 	result := db.DbConnect.Create(&category)
 	if result.Error != nil {
 		// handle error, e.g. log it or return it in the HTTP response
@@ -73,6 +79,11 @@ func EditCategory(c *gin.Context) {
 	}
 
 	// Bind the request body to the Position
+	if err := c.ShouldBind(&category); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
 	if err := c.ShouldBind(&category); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
