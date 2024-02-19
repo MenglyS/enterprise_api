@@ -61,7 +61,7 @@ func UploadFileToSpaces(fileName string, fileHeader *multipart.FileHeader) error
 		Body:                 bytes.NewReader(buffer),
 		ContentLength:        aws.Int64(int64(len(buffer))),
 		ContentType:          aws.String(http.DetectContentType(buffer)),
-		ContentDisposition:   aws.String("attachment"),
+		ContentDisposition:   aws.String("inline"),
 		ServerSideEncryption: aws.String("AES256"),
 	})
 
