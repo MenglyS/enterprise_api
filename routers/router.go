@@ -10,6 +10,7 @@ import (
 func InitRoute(route *gin.Engine) {
 
 	apiV1 := route.Group("/api/v1")
+	apiV1.Use(middleware.CORSMiddleware())
 	{
 
 		//admin routes
@@ -86,7 +87,8 @@ func InitRoute(route *gin.Engine) {
 
 		//expense routes
 		expense := apiV1.Group("/expense")
-		expense.POST("/create", middleware.AuthMiddleware(2), controllers.CreateExpense)
+		applicant.Use(middleware.AuthMiddleware(2))
+		expense.POST("/create", controllers.CreateExpense)
 		expense.GET("/getByUser", controllers.GetExpenseEmployee)
 		expense.Use(middleware.AuthMiddleware(1))
 		expense.GET("/getAll", controllers.GetExpenses)
@@ -95,7 +97,8 @@ func InitRoute(route *gin.Engine) {
 
 		//leave routes
 		leave := apiV1.Group("/leave")
-		leave.POST("/create", middleware.AuthMiddleware(2), controllers.CreateLeave)
+		applicant.Use(middleware.AuthMiddleware(2))
+		leave.POST("/create", controllers.CreateLeave)
 		leave.GET("/getByUser", controllers.GetLeaveEmployee)
 		leave.Use(middleware.AuthMiddleware(1))
 		leave.GET("/getAll", controllers.GetLeaves)
