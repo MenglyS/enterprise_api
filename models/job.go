@@ -9,7 +9,7 @@ import (
 type Job struct {
 	JobId             uint   `gorm:"primary_key"`
 	Title             string `validate:"required"`
-	CategoryIds       string `validate:"required"`
+	CategoryIds       int    `validate:"required,numeric"`
 	Description       string `validate:"required"`
 	Contact           string `validate:"required"`
 	ExpiryDate        string `validate:"required"`

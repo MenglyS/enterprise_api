@@ -78,31 +78,34 @@ func InitRoute(route *gin.Engine) {
 
 		//applicants routes
 		applicant := apiV1.Group("/applicant")
-		apiV1.POST("/create/:id", controllers.CreateApplicant)
+		applicant.POST("/create/:id", controllers.CreateApplicant)
 		applicant.Use(middleware.AuthMiddleware(1))
 		applicant.GET("/getAll", controllers.GetApplicants)
 		applicant.DELETE("/delete/:id", controllers.DeleteApplicant)
 		applicant.PUT("/edit/:id", controllers.EditApplicant)
 		applicant.GET("/count", controllers.CountApplicants)
+		applicant.GET("/scheduledCount", controllers.Scheduled_Applicant_Count)
 
 		//expense routes
 		expense := apiV1.Group("/expense")
-		applicant.Use(middleware.AuthMiddleware(2))
+		expense.Use(middleware.AuthMiddleware(2))
 		expense.POST("/create", controllers.CreateExpense)
 		expense.GET("/getByUser", controllers.GetExpenseEmployee)
 		expense.Use(middleware.AuthMiddleware(1))
 		expense.GET("/getAll", controllers.GetExpenses)
 		expense.PUT("/edit/:id", controllers.EditExpense)
 		expense.DELETE("/delete/:id", controllers.DeleteExpense)
+		expense.GET("/pendingCount", controllers.Pending_Expense_Count)
 
 		//leave routes
 		leave := apiV1.Group("/leave")
-		applicant.Use(middleware.AuthMiddleware(2))
+		leave.Use(middleware.AuthMiddleware(2))
 		leave.POST("/create", controllers.CreateLeave)
 		leave.GET("/getByUser", controllers.GetLeaveEmployee)
 		leave.Use(middleware.AuthMiddleware(1))
 		leave.GET("/getAll", controllers.GetLeaves)
 		leave.PUT("/edit/:id", controllers.EditLeave)
 		leave.DELETE("/delete/:id", controllers.DeleteLeave)
+		leave.GET("/pendingCount", controllers.Pending_Leave_Count)
 	}
 }

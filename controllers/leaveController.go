@@ -206,3 +206,15 @@ func EditLeave(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"data": leave})
 }
+
+func Pending_Leave_Count(c *gin.Context) {
+	var count int64
+	if err := db.DbConnect.Model(models.Leave{}).Where("status = ?", 1).Count(&count).Error; err != nil {
+		// handle error, e.g. log it or return it in the HTTP response
+		fmt.Println(err)
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"data": count})
+}

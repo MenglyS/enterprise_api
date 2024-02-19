@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"errors"
+	"fmt"
 	"midterm/db"
 	"midterm/env"
 	"midterm/models"
@@ -67,6 +68,7 @@ func GetAuthUser(c *gin.Context) (models.User, error) {
 	var user models.User
 	id, exists := c.Get("id")
 	if !exists {
+		fmt.Printf("No user found\n", id)
 		return user, errors.New("No user found")
 	}
 

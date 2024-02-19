@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"fmt"
 	"midterm/env"
 	"net/http"
 	"strings"
@@ -47,6 +48,8 @@ func AuthMiddleware(role int) gin.HandlerFunc {
 			c.Abort()
 			return
 		}
+
+		fmt.Printf("test", (*claimsMap)["user_id"])
 
 		c.Set("id", (*claimsMap)["user_id"])
 

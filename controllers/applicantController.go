@@ -82,6 +82,16 @@ func GetApplicants(c *gin.Context) {
 		return
 	}
 
+	for i, applicant := range applicants {
+		job := models.Job{}
+		if err := db.DbConnect.First(&job, applicant.JobId).Error; err != nil {
+			c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
+			return
+		}
+
+		applicants[i].Job = &job
+	}
+
 	c.JSON(http.StatusOK, gin.H{"data": applicants})
 }
 
@@ -146,6 +156,8 @@ func EditApplicant(c *gin.Context) {
 		return
 	}
 
+	applicant.Job = nil
+
 	err := applicant.Validate()
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -204,4 +216,16 @@ func CountApplicants(c *gin.Context) {
 	count := len(applicants)
 
 	c.JSON(http.StatusOK, gin.H{"total": count})
+}
+
+func Scheduled_Applicant_Count(c *gin.Context) {
+	var count int64
+	if err := db.DbConnect.Model(models.Applicant{}).Where("status = ?", 2).Count(&count).Error; err != nil {
+		// handle error, e.g. log it or return it in the HTTP response
+		fmt.Println(err)
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"data": count})
 }
